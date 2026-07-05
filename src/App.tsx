@@ -1,122 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useCallback } from 'react'
+import Header from './components/Header'
+import VoiceModal from './components/VoiceModal'
+import TransactionList from './components/TransactionList'
+import { useVoiceInput, parseVoiceInput } from './hooks/useVoiceInput'
+import { db } from './db/database'
+import type { ParsedTransaction } from './db/types'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [showModal, setShowModal] = useState(false)
+  const { isListening, transcript, parsed, startListening, stopListening, resetParsed } = useVoiceInput()
+
+  const saveTransaction = useCallback(async (data: ParsedTransaction) => {
+    await db.transactions.add({
+      type: data.type,
+      amount: data.amount,
+      description: data.description,
+      category: data.category,
+      date: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    })
+    setShowModal(false)
+    resetParsed()
+  }, [resetParsed])
+
+  const handleTextInput = useCallback((text: string) => {
+    const result = parseVoiceInput(text)
+    if (result) saveTransaction(result)
+  }, [saveTransaction])
+
+  const handleMicPress = useCallback(() => {
+    setShowModal(true)
+    setTimeout(() => startListening(), 300)
+  }, [startListening])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-dvh bg-black text-white">
+      <Header />
+      <TransactionList />
 
-      <div className="ticks"></div>
+      <button
+        onClick={handleMicPress}
+        className="fixed bottom-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-rose-500 hover:bg-rose-400 active:scale-95 rounded-full flex items-center justify-center text-2xl shadow-lg shadow-rose-500/30 transition-all"
+      >
+        🎤
+      </button>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {showModal && (
+        <VoiceModal
+          isListening={isListening}
+          transcript={transcript}
+          parsed={parsed}
+          onStop={stopListening}
+          onConfirm={saveTransaction}
+          onCancel={() => { stopListening(); setShowModal(false); resetParsed() }}
+          onTextInput={handleTextInput}
+        />
+      )}
+    </div>
   )
 }
-
-export default App
