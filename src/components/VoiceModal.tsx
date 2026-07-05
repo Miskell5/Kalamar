@@ -1,3 +1,13 @@
+/*
+  La ventana que aparece cuando tocas el micrófono.
+  Tiene tres modos:
+  - Grabando: muestra la animación de escucha y un botón para detener.
+  - Resultado: muestra lo que entendió (tipo, monto, categoría) y pide confirmación.
+  - Texto: si no hay voz disponible, puedes escribir directamente.
+  Se comunica con: App (recibe datos y funciones por props).
+  Importancia: 🟡 Media (es la interfaz de entrada nomás).
+*/
+
 import type { ParsedTransaction } from '../db/types'
 
 interface Props {

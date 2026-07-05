@@ -1,3 +1,12 @@
+/*
+  La lista de todos los movimientos registrados.
+  Se actualiza sola cuando cambian los datos en la base de datos.
+  Cada movimiento muestra: icono de categoría, descripción, categoría y monto.
+  Si no hay movimientos, muestra un mensaje invitando a agregar el primero.
+  Se comunica con: database.ts (lectura) y categories.ts (para los iconos).
+  Importancia: 🟡 Media (solo lista lo que hay).
+*/
+
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import { DEFAULT_CATEGORIES } from '../db/categories'

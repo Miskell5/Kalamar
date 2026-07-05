@@ -6,6 +6,14 @@ import { useVoiceInput, parseVoiceInput } from './hooks/useVoiceInput'
 import { db } from './db/database'
 import type { ParsedTransaction } from './db/types'
 
+/*
+  El cerebro de Kalamar.
+  Este es el componente principal que arma todo: el encabezado con el balance,
+  la lista de movimientos, el botón flotante del micrófono y la ventana modal
+  para agregar gastos/ingresos por voz o texto.
+  Se comunica con: Header, VoiceModal, TransactionList, useVoiceInput y la base de datos.
+  Importancia: 🔴 Alta (sin esto no hay app).
+*/
 export default function App() {
   const [showModal, setShowModal] = useState(false)
   const { isListening, transcript, parsed, startListening, stopListening, resetParsed } = useVoiceInput()

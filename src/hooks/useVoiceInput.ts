@@ -1,3 +1,14 @@
+/*
+  El corazón de la entrada por voz.
+  Aquí pasan dos cosas importantes:
+  1) parseVoiceInput() — agarra un texto como "gasté 45 en uber" y lo
+     convierte en {tipo, monto, descripción, categoría}.
+  2) useVoiceInput() — es un hook de React que maneja el micrófono:
+     prende/apaga el reconocimiento de voz y guarda lo que se dijo.
+  Se importa en: App (tanto el hook como el parser directo).
+  Importancia: 🔴 Alta (sin esto no hay magia).
+*/
+
 import { useState, useCallback, useRef } from 'react'
 import type { ParsedTransaction } from '../db/types'
 

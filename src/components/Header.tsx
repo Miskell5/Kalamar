@@ -1,3 +1,12 @@
+/*
+  El encabezado principal que se ve arriba de todo.
+  Muestra el balance total, los ingresos y gastos del período.
+  Usa useLiveQuery para mantenerse actualizado automáticamente cuando
+  agregas o quitas transacciones en la base de datos.
+  Se comunica con: database.ts (para leer los datos).
+  Importancia: 🟡 Media (solo muestra info, no hace nada más).
+*/
+
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 

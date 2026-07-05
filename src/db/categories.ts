@@ -1,3 +1,11 @@
+/*
+  Las categorías que vienen por defecto en Kalamar.
+  Cada una tiene un nombre, un emoji y si es de ingreso o gasto.
+  Esto se usa al mostrar movimientos para poner el icono correcto.
+  Se importa en: TransactionList.
+  Importancia: 🟡 Media (puras categorías).
+*/
+
 import type { Category } from './types'
 
 export const DEFAULT_CATEGORIES: Category[] = [
