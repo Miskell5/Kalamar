@@ -13,16 +13,6 @@ export default function App() {
   const [showModal, setShowModal] = useState(false)
   const { isListening, transcript, parsed, startListening, stopListening, resetParsed } = useVoiceInput()
 
-  if (loading) {
-    return (
-      <div className="min-h-dvh bg-black text-white flex items-center justify-center">
-        <p className="text-neutral-500">Cargando...</p>
-      </div>
-    )
-  }
-
-  if (!user) return <AuthPage />
-
   const saveTransaction = useCallback(async (data: ParsedTransaction) => {
     await db.transactions.add({
       type: data.type,
@@ -45,6 +35,16 @@ export default function App() {
     setShowModal(true)
     setTimeout(() => startListening(), 300)
   }, [startListening])
+
+  if (loading) {
+    return (
+      <div className="min-h-dvh bg-black text-white flex items-center justify-center">
+        <p className="text-neutral-500">Cargando...</p>
+      </div>
+    )
+  }
+
+  if (!user) return <AuthPage />
 
   return (
     <div className="min-h-dvh bg-black text-white">
