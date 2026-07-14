@@ -24,6 +24,14 @@ export interface Category {
   color?: string
 }
 
+export interface Budget {
+  id?: number
+  category: string
+  amount: number
+  month: string
+  createdAt: string
+}
+
 export type ParsedTransaction = {
   type: 'income' | 'expense'
   amount: number

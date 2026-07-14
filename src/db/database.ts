@@ -8,15 +8,17 @@
 */
 
 import Dexie, { type Table } from 'dexie'
-import type { Transaction } from './types'
+import type { Transaction, Budget } from './types'
 
 export class KalamarDB extends Dexie {
   transactions!: Table<Transaction, number>
+  budgets!: Table<Budget, number>
 
   constructor() {
     super('kalamar')
-    this.version(1).stores({
+    this.version(2).stores({
       transactions: '++id, type, category, date',
+      budgets: '++id, category, month',
     })
   }
 }

@@ -3,6 +3,7 @@ import { useAuth } from './contexts/AuthContext'
 import Header from './components/Header'
 import AuthPage from './components/AuthPage'
 import VoiceModal from './components/VoiceModal'
+import BudgetList from './components/BudgetList'
 import TransactionList from './components/TransactionList'
 import { useVoiceInput, parseVoiceInput } from './hooks/useVoiceInput'
 import { db } from './db/database'
@@ -54,6 +55,7 @@ export default function App() {
         </button>
       </div>
       <Header />
+      <BudgetList />
       <TransactionList />
 
       <button
