@@ -23,13 +23,10 @@ export default function BudgetList() {
     db.transactions.toArray()
   )
 
-  if (!budgets || budgets.length === 0) return null
-
   const spentByCategory: Record<string, number> = {}
   if (transactions) {
-    const monthStart = new Date()
-    monthStart.setDate(1)
-    monthStart.setHours(0, 0, 0, 0)
+    const now = new Date()
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
     for (const t of transactions) {
       if (t.type === 'expense') {
@@ -56,47 +53,53 @@ export default function BudgetList() {
         </button>
       </div>
 
-      <div className="space-y-3">
-        {budgets.map(b => {
-          const spent = spentByCategory[b.category] || 0
-          const progress = Math.min(spent / b.amount, 1)
-          const remaining = b.amount - spent
-          const isOver = remaining < 0
+      {(!budgets || budgets.length === 0) ? (
+        <p className="text-neutral-500 text-sm text-center py-6">
+          Crea un presupuesto mensual para controlar tus gastos
+        </p>
+      ) : (
+        <div className="space-y-3">
+          {budgets.map(b => {
+            const spent = spentByCategory[b.category] || 0
+            const progress = Math.min(spent / b.amount, 1)
+            const remaining = b.amount - spent
+            const isOver = remaining < 0
 
-          return (
-            <div
-              key={b.id}
-              onClick={() => setEditing(b)}
-              className="bg-neutral-900 rounded-2xl p-4 cursor-pointer active:scale-[0.98] transition-transform"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">{getCategoryIcon(b.category)}</span>
-                  <span className="text-sm font-medium">{b.category}</span>
+            return (
+              <div
+                key={b.id}
+                onClick={() => setEditing(b)}
+                className="bg-neutral-900 rounded-2xl p-4 cursor-pointer active:scale-[0.98] transition-transform"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{getCategoryIcon(b.category)}</span>
+                    <span className="text-sm font-medium">{b.category}</span>
+                  </div>
+                  <span className={`text-sm font-semibold ${isOver ? 'text-rose-400' : 'text-neutral-300'}`}>
+                    ${spent.toFixed(0)} / ${b.amount.toFixed(0)}
+                  </span>
                 </div>
-                <span className={`text-sm font-semibold ${isOver ? 'text-rose-400' : 'text-neutral-300'}`}>
-                  ${spent.toFixed(0)} / ${b.amount.toFixed(0)}
-                </span>
-              </div>
 
-              <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    isOver ? 'bg-rose-500' : progress > 0.8 ? 'bg-amber-500' : 'bg-emerald-500'
-                  }`}
-                  style={{ width: `${progress * 100}%` }}
-                />
-              </div>
+                <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      isOver ? 'bg-rose-500' : progress > 0.8 ? 'bg-amber-500' : 'bg-emerald-500'
+                    }`}
+                    style={{ width: `${progress * 100}%` }}
+                  />
+                </div>
 
-              <p className={`text-xs mt-1.5 ${isOver ? 'text-rose-400' : 'text-neutral-500'}`}>
-                {isOver
-                  ? `$${Math.abs(remaining).toFixed(0)} por encima`
-                  : `$${remaining.toFixed(0)} restantes`}
-              </p>
-            </div>
-          )
-        })}
-      </div>
+                <p className={`text-xs mt-1.5 ${isOver ? 'text-rose-400' : 'text-neutral-500'}`}>
+                  {isOver
+                    ? `$${Math.abs(remaining).toFixed(0)} por encima`
+                    : `$${remaining.toFixed(0)} restantes`}
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {showModal && (
         <BudgetModal month={month} onClose={() => setShowModal(false)} />
