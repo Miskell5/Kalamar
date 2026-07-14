@@ -7,11 +7,15 @@
   Importancia: 🟡 Media (solo lista lo que hay).
 */
 
+import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/database'
 import { DEFAULT_CATEGORIES } from '../db/categories'
+import EditTransactionModal from './EditTransactionModal'
+import type { Transaction } from '../db/types'
 
 export default function TransactionList() {
+  const [editing, setEditing] = useState<Transaction | null>(null)
   const transactions = useLiveQuery(() =>
     db.transactions.orderBy('date').reverse().toArray()
   )
@@ -35,7 +39,11 @@ export default function TransactionList() {
         {transactions.map((t) => {
           const cat = getCategoryInfo(t.category)
           return (
-            <div key={t.id} className="flex items-center gap-3 py-3">
+            <div
+              key={t.id}
+              onClick={() => setEditing(t)}
+              className="flex items-center gap-3 py-3 active:bg-neutral-900 rounded-xl px-2 -mx-2 transition-colors cursor-pointer"
+            >
               <div className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center text-lg">
                 {cat?.icon || '📦'}
               </div>
@@ -50,6 +58,13 @@ export default function TransactionList() {
           )
         })}
       </div>
+
+      {editing && (
+        <EditTransactionModal
+          transaction={editing}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   )
 }
