@@ -1,22 +1,27 @@
 import { useState, useCallback } from 'react'
+import { useAuth } from './contexts/AuthContext'
 import Header from './components/Header'
+import AuthPage from './components/AuthPage'
 import VoiceModal from './components/VoiceModal'
 import TransactionList from './components/TransactionList'
 import { useVoiceInput, parseVoiceInput } from './hooks/useVoiceInput'
 import { db } from './db/database'
 import type { ParsedTransaction } from './db/types'
 
-/*
-  El cerebro de Kalamar.
-  Este es el componente principal que arma todo: el encabezado con el balance,
-  la lista de movimientos, el botón flotante del micrófono y la ventana modal
-  para agregar gastos/ingresos por voz o texto.
-  Se comunica con: Header, VoiceModal, TransactionList, useVoiceInput y la base de datos.
-  Importancia: 🔴 Alta (sin esto no hay app).
-*/
 export default function App() {
+  const { user, loading, signOut } = useAuth()
   const [showModal, setShowModal] = useState(false)
   const { isListening, transcript, parsed, startListening, stopListening, resetParsed } = useVoiceInput()
+
+  if (loading) {
+    return (
+      <div className="min-h-dvh bg-black text-white flex items-center justify-center">
+        <p className="text-neutral-500">Cargando...</p>
+      </div>
+    )
+  }
+
+  if (!user) return <AuthPage />
 
   const saveTransaction = useCallback(async (data: ParsedTransaction) => {
     await db.transactions.add({
@@ -43,6 +48,11 @@ export default function App() {
 
   return (
     <div className="min-h-dvh bg-black text-white">
+      <div className="flex justify-end px-6 pt-4">
+        <button onClick={signOut} className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors">
+          Cerrar sesión
+        </button>
+      </div>
       <Header />
       <TransactionList />
 
